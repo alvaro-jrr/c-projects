@@ -21,7 +21,7 @@ float get_n();
 
 void organize(
 	Encuestado *ptr, Encuestado *male_younger, Encuestado *female_younger,
-	Encuestado *male_older, Encuestado *female_older,
+	Encuestado *male_older, Encuestado *female_older, int size_organized,
 	int size, int male_younger_size[0], int female_younger_size[0],
 	int male_older_size[0], int female_older_size[0];
 );
@@ -55,9 +55,10 @@ int main() {
 		"Imprimir Encuestados (Por Clasificacion)",
 		"Finalizar Encuesta"};
 			
-	int n = 0, size = 0, max_size = 50, opt, n_opt = 5, true = 1, 
-		male_younger_size[] = {0}, male_older_size[] = {0}, 
-		female_younger_size[] = {0}, female_older_size[] = {0};
+	int n = 0, size = 0, max_size = 50, opt, n_opt = 5, true = 1,
+		size_organized = 0, male_younger_size[] = {0}, male_older_size[] = {0}, 
+		female_younger_size[] = {0}, female_older_size[] = {0},
+		bool;
 		
 	// Asignando memoria con valor max_size de la estructura Encuestado
 	ptr = (Encuestado*) malloc(max_size * sizeof(Encuestado));
@@ -66,106 +67,175 @@ int main() {
 	female_younger = (Encuestado*) malloc(max_size * sizeof(Encuestado));
 	female_older = (Encuestado*) malloc(max_size * sizeof(Encuestado));
 	
-	do {
-		printf("----- Programa de Encuestas -----\n\n");
-		
-		// Mostrar Opciones
-		display_stgs(n_opt, 60, options); printf("\n");
-		
-		// Elegir Opcion
-		opt = get_option(1, n_opt, "Opcion");
-		
-		printf("\n---\n\n");
-		
-		// Acciones
-		switch(opt) {
-			// Registro de Datos
-			case 1:
-				/*
-				 * Si el espacio asignado en memoria
-				 * se llena completamente. Entonces,
-				 * se asigna mas memoria utilizando malloc.
-				*/
-				
-				if (max_size == size) {
-					printf("El Espacio Asignado se ha llenado\nAsignando mas memoria...\n");
-					max_size += 50;
-					ptr = realloc(ptr, max_size * sizeof(Encuestado));
-					
-					if (ptr == NULL) {
-						printf("=> Error: La Memoria no fue Asignada\nNo se pueden ingresar mas registros");
-					} else {
-						printf("Memoria asignada exitosamente!\n\n");
-					}
-				}
-				
-				/*
-				 * Si el apuntador es diferente a NULL,
-				 * pide el numero de personas a
-				 * encuestar.
-				*/
-								
-				if (ptr != NULL) {
-					n = (int) get_option(1, max_size - size, "Numero de Personas a Encuestar");
-					get_information(ptr, n, size);
-					size += n;					
-				}
-
-				break;
-				
-			// Muestra los primeros 10 encuestados
-			case 2:
-				if (size > 10) {
-					display(ptr, 10, "Primeros 10 Encuestados");
-				} else {
-					display(ptr, size, "Primeros 10 Encuestados");
-				}
-				
-				clear();
-				
-				break;
-				
-			// Muestra todos los encuestados
-			case 3:
-				display(ptr, size, "Todos los Encuestados"); clear();
-				break;
-				
-			// Separa los Datos por Categorias
-			case 4:			
-				if (size <= 0) {
-					printf("No hay registros\n");
-				} else {
-					organize(ptr, male_younger, female_younger, 
-						male_older, female_older, size, male_younger_size, 
-						female_younger_size, male_older_size, female_older_size
-					);
-										
-					display(male_younger, male_younger_size[0], "Masculinos (Edad < 25)"); printf("\n");
-					display(male_older, male_older_size[0], "Masculinos (Edad > 25)"); printf("\n");
-					display(female_younger, female_younger_size[0], "Femeninos  (Edad < 25)"); printf("\n");
-					display(female_older, female_older_size[0], "Femeninos  (Edad > 25)"); printf("\n");
-				}
-
-				// Mostrar la informacion organizada
-				clear();
-				break;
+	// Condicion que se cumple si se pudo asignar el espacio en memoria
+	bool = (ptr != NULL && male_younger != NULL && male_older != NULL && 
+		female_younger != NULL && female_older != NULL);
+	
+	/*
+	 * Si se cumple la condicion
+	 * que almacena bool.
+	 * 
+	 * Entonces, se pudo asignar el espacio
+	 * en memoria y se procede a la ejecución
+	 * del programa.
+	 * 
+	 * Sino, mostrara en pantalla que no se pudo
+	 * realizar la asignacion de espacio en memoria
+	 * y finaliza el programa.
+	*/
+	
+	if (bool) {
+		do {
+			printf("----- Programa de Encuestas -----\n\n");
 			
-			case 5:
-			default:
-				true = 0;
-				break;
-		}
+			// Mostrar Opciones
+			display_stgs(n_opt, 60, options); printf("\n");
+			
+			// Elegir Opcion
+			opt = get_option(1, n_opt, "Opcion");
+			
+			printf("\n---\n\n");
+			
+			// Acciones
+			switch(opt) {
+				// Registro de Datos
+				case 1:
 				
-		// Limpiar Pantalla
-		printf("\nPresione Enter para Continuar\n");
-		getchar();
-		system(clear_str);
-		
-	} while (true == 1);
+					/*
+					 * Si el espacio asignado en memoria
+					 * se llena completamente. Entonces,
+					 * se asigna mas memoria utilizando malloc.
+					 * 
+					 * Este paso se ejecuta para cada apuntador
+					 * utilizado en el programa.
+					*/
+					
+					if (max_size == size) {
+						printf("El Espacio Asignado se ha llenado\nAsignando mas memoria...\n");
+						max_size += 50;
+						ptr = realloc(ptr, max_size * sizeof(Encuestado));
+						male_younger = realloc(male_younger, max_size * sizeof(Encuestado));
+						male_older = realloc(male_older, max_size * sizeof(Encuestado));
+						female_younger = realloc(female_younger, max_size * sizeof(Encuestado));
+						female_older = realloc(female_older, max_size * sizeof(Encuestado));
+						
+						bool = ptr == NULL && male_younger == NULL && male_older == NULL && 
+							female_younger == NULL && female_older == NULL;
+											
+						if (bool) {
+							printf("=> Error: La Memoria no fue Asignada\nNo se pueden ingresar mas registros");
+						} else {
+							printf("Memoria asignada exitosamente!\n\n");
+						}
+					}
+					
+					/*
+					 * Si ninguno de los apuntadores es NULL,
+					 * pide el numero de personas a
+					 * encuestar.
+					*/
+					
+					bool = (ptr != NULL && male_younger != NULL && male_older != NULL && 
+						female_younger != NULL && female_older != NULL);
+									
+					if (bool) {
+						n = (int) get_option(1, max_size - size, "Numero de Personas a Encuestar");
+						get_information(ptr, n, size);
+						size += n;					
+					}
+
+					break;
+					
+				// Muestra los primeros 10 encuestados
+				case 2:
+				
+					/*
+					 * Si size > 10, entonces significa
+					 * que ya se han registrado mas de 10
+					 * personas. Por lo tanto, se indica
+					 * que se muestren solo 10 registros.
+					 * 
+					 * Sino, muestra todos los valores que
+					 * se tengan actualmente.
+					*/
+					
+					if (size > 10) {
+						display(ptr, 10, "Primeros 10 Encuestados");
+					} else {
+						display(ptr, size, "Primeros 10 Encuestados");
+					}
+					
+					clear();
+					
+					break;
+					
+				// Muestra todos los encuestados
+				case 3:
+					display(ptr, size, "Todos los Encuestados"); clear();
+					break;
+					
+				// Separa los Datos por Categorias
+				case 4:			
+					if (size <= 0) {
+						printf("No hay registros\n");
+					} else {
+																		
+						organize(ptr, male_younger, female_younger, 
+							male_older, female_older, size_organized, size, 
+							male_younger_size, female_younger_size, male_older_size, 
+							female_older_size
+						);
+						
+						/*
+						 * La variable size_organized
+						 * toma el valor de size.
+						 * 
+						 * Asi cuando se organice mas informacion
+						 * el indice inicia desde el pasado valor de
+						 * size, mientras i sea menor que el 
+						 * valor actual de size.
+						 * 
+						 * De esta forma no se reorganiza informacion
+						 * que anteriormente fue organizada. Y se evitan
+						 * errores.
+						*/
+						
+						size_organized = size;
+						
+						// Mostrar la informacion organizada										
+						display(male_younger, male_younger_size[0], "Masculinos (Edad < 25)"); printf("\n");
+						display(male_older, male_older_size[0], "Masculinos (Edad > 25)"); printf("\n");
+						display(female_younger, female_younger_size[0], "Femeninos  (Edad < 25)"); printf("\n");
+						display(female_older, female_older_size[0], "Femeninos  (Edad > 25)"); printf("\n");
+					}
+
+					clear();
+					break;
+				
+				case 5:
+				default:
+					true = 0;
+					break;
+			}
+					
+			// Limpiar Pantalla
+			printf("\nPresione Enter para Continuar\n");
+			getchar();
+			system(clear_str);
+			
+		} while (true == 1);	
+	} else {
+		printf("No se pudo asignar el espacio en memoria\n\n----- Finalizado -----");
+		exit(0);
+	}
 	
 	// Libera espacio en memoria
 	free(ptr);
-	
+	free(male_younger);
+	free(male_older);
+	free(female_younger);
+	free(female_older);
+
 	printf("----- Finalizado -----");
 	
 	printf("\n\nCoded with \u2764 by Alvaro");
@@ -286,14 +356,14 @@ void get_information(Encuestado *ptr, int n, int size) {
 // Funcion que Organiza los Datos
 void organize(
 	Encuestado *ptr, Encuestado *male_younger, Encuestado *female_younger,
-	Encuestado *male_older, Encuestado *female_older,
+	Encuestado *male_older, Encuestado *female_older, int size_organized,
 	int size, int male_younger_size[0], int female_younger_size[0],
 	int male_older_size[0], int female_older_size[0]
 ) {
 		
 	int i;
 				
-	for (i = 0; i < size; i++) {
+	for (i = size_organized; i < size; i++) {
 		if (strcmp((ptr + i)->sex, "M") == 0) {
 			
 			if ((ptr + i)->age < 25) {
