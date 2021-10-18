@@ -53,9 +53,7 @@ int main() {
 		printf("----- Programa de Encuestas -----\n\n");
 		
 		// Mostrar Opciones
-		display_stgs(n_opt, 50, options);
-		
-		printf("\n");
+		display_stgs(n_opt, 50, options); printf("\n");
 		
 		// Elegir Opcion
 		opt = get_option(1, n_opt, "Opcion");
@@ -82,10 +80,7 @@ int main() {
 				break;
 				
 			case 3:
-				display(ptr, size);
-				
-				clear();
-				
+				display(ptr, size); clear();
 				break;
 				
 			case 4:
@@ -95,7 +90,7 @@ int main() {
 		}
 				
 		// Limpiar Pantalla
-		printf("\nPresione Enter para Continuar\n");  
+		printf("\nPresione Enter para Continuar\n");
 		getchar();
 		system(clear_str);
 		
@@ -137,8 +132,7 @@ float get_n() {
 	*/
 	
 	if (!scanf("%f", &n)) {
-		scanf("%*[^\n]");
-		clear();
+		scanf("%*[^\n]"); clear();
 	}
 	
 	return n;
@@ -188,13 +182,15 @@ void display_stgs(int n, int m, char arr[n][m]) {
 void get_information(Encuestado *ptr, int n, int size) {
 	int i, j, aux;
 		
-	for (i = size; i < (n + size); i++) {		
+	for (i = size; i < (n + size); i++) {	
+	
 		// Obtencion de la informacion
+		
 		printf("\nNombre: "); scanf("%s", (ptr + i)->name); clear();
 		
 		printf("Apellido: "); scanf("%s", (ptr + i)->lastname); clear();
 		
-		aux = (int) get_option(1, 2, "Sexo (M = 1 v F = 2)");
+		aux = (int) get_option(1, 2, "Sexo (M = 1 | F = 2)");
 		
 		// Si aux == 1 es masculino, sino es femenino
 		
@@ -229,18 +225,18 @@ void display(Encuestado *ptr, int n) {
 		
 		for (i = 0; i < n; i++) {
 			printf("\n\n--- %02d ---\n\n", i + 1);
-			printf("Nombre: %s", (ptr + i)->name);
-			printf("\nApellido: %s", (ptr + i)->lastname);
-			printf("\nSexo: %s", (ptr + i)->sex);
-			printf("\nCedula: %d", (ptr + i)->id);
-			printf("\nEdad: %d", (ptr + i)->age);
+			
+			printf("Nombre: %s\nApellido:%s\nSexo:%s\nCedula: %d\nEdad: %d",
+				(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->sex,
+				(ptr + i)->id, (ptr + i)->age
+			);
 					
 			printf("\n\n- Canciones Favoritas -\n\n");
 			
 			for (j = 0; j < 5; j++) {
 				printf("%d) %s\n", j + 1, (ptr + i)->songs[j]);
 			}
-		}		
+		}
 	}
 	
 }
