@@ -44,7 +44,7 @@ int main() {
 		"Imprimir Todos los Encuestados",
 		"Finalizar Encuesta"};
 			
-	int n = 0, size = 0, max_size = 250, opt, n_opt = 4, true = 1;
+	int n = 0, size = 0, max_size = 50, opt, n_opt = 4, true = 1;
 		
 	// Asignando memoria para max_size de la estructura Encuestado
 	ptr = (Encuestado*) malloc(max_size * sizeof(Encuestado));
@@ -63,9 +63,36 @@ int main() {
 		// Acciones
 		switch(opt) {
 			case 1:
-				n = (int) get_option(1, max_size - size, "Numero de Personas a Encuestar");
-				get_information(ptr, n, size);
-				size += n;
+				/*
+				 * Si el espacio asignado en memoria
+				 * se llena completamente. Entonces,
+				 * se asigna mas memoria utilizando malloc.
+				*/
+				
+				if (max_size == size) {
+					printf("El Espacio Asignado se ha llenado\nAsignando mas memoria...\n");
+					max_size += 50;
+					ptr = realloc(ptr, max_size * sizeof(Encuestado));
+					
+					if (ptr == NULL) {
+						printf("=> Error: La Memoria no fue Asignada\nNo se pueden ingresar mas registros");
+					} else {
+						printf("Memoria asignada exitosamente!\n\n");
+					}
+				}
+				
+				/*
+				 * Si el apuntador es diferente a NULL,
+				 * pide el numero de personas a
+				 * encuestar.
+				*/
+								
+				if (ptr != NULL) {
+					n = (int) get_option(1, max_size - size, "Numero de Personas a Encuestar");
+					get_information(ptr, n, size);
+					size += n;					
+				}
+
 				break;
 				
 			case 2:								
@@ -161,6 +188,8 @@ int get_option(int min, int max, char *str) {
 		
 		if (((int) n >= min) && ((int) n <= max)) {
 			true = 0;
+		} else {
+			printf("\n=> Error: Introduzca un valor n, tal que %d <= n <= %d\n\n", min, max);
 		}
 		
 	} while (true == 1);
@@ -224,9 +253,9 @@ void display(Encuestado *ptr, int n) {
 		printf("----- Encuestados -----");
 		
 		for (i = 0; i < n; i++) {
-			printf("\n\n--- %02d ---\n\n", i + 1);
+			printf("\n\n--- %03d ---\n\n", i + 1);
 			
-			printf("Nombre: %s\nApellido:%s\nSexo:%s\nCedula: %d\nEdad: %d",
+			printf("Nombre: %s\nApellido: %s\nSexo: %s\nCedula: %d\nEdad: %d",
 				(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->sex,
 				(ptr + i)->id, (ptr + i)->age
 			);
