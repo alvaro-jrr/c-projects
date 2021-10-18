@@ -123,7 +123,8 @@ int main() {
 							female_younger == NULL && female_older == NULL;
 											
 						if (bool) {
-							printf("=> Error: La Memoria no fue Asignada\nNo se pueden ingresar mas registros");
+							printf("=> Error: La Memoria no fue Asignada");
+							exit(0);
 						} else {
 							printf("Memoria asignada exitosamente!\n\n");
 						}
@@ -347,7 +348,29 @@ void get_information(Encuestado *ptr, int n, int size) {
 		
 		for (j = 0; j < 5; j++) {
 			printf("   %d) ", j + 1);
-			scanf("%[^\n]%*c", (ptr + i)->songs[j]);
+			fgets((ptr + i)->songs[j], sizeof((ptr + i)->songs[j]), stdin);
+			
+			// Eliminando la \n al hacer enter
+			
+			/*
+			 * Accedemos a la ultima letra de la
+			 * cadena introducida y se cambia la 
+			 * nueva linea \n, por \0 el cual
+			 * indica que es el final de la cadena.
+			*/
+			
+			(ptr + i)->songs[j][strlen((ptr + i)->songs[j]) - 1] = '\0';
+			
+			/*
+			 * Si la cadena esta vacia, entonces
+			 * reduce en 1 el valor de j. Para
+			 * que vuelva a pedir la introduccion
+			 * de la cancion en esa posicion.
+			*/
+			
+			if (strlen((ptr + i)->songs[j]) == 0) {
+				j--;
+			}
 		}
 	}
 	
