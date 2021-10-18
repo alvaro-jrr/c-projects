@@ -7,7 +7,7 @@
 typedef struct Encuesta {
 	char name[50];
 	char lastname[50];
-	char sex[10];
+	char sex[5];
 	char songs[5][50];
 	int age;
 	int id;
@@ -16,10 +16,20 @@ typedef struct Encuesta {
 // ----- Declaracion de Funciones -----
 
 int get_option(int min, int max, char *str);
+
 float get_n();
+
+void organize(
+	Encuestado *ptr, Encuestado *male_younger, Encuestado *female_younger,
+	Encuestado *male_older, Encuestado *female_older,
+	int size, int male_younger_size[0], int female_younger_size[0],
+	int male_older_size[0], int female_older_size[0];
+);
+
+
 void display_stgs(int n, int m, char arr[n][m]);
 void get_information(Encuestado *ptr, int n, int size);
-void display(Encuestado *ptr, int n);
+void display(Encuestado *ptr, int n, char *str);
 void clear();
 
 // ----- Main -----
@@ -37,23 +47,30 @@ int main() {
 	#endif
 	
 	// Declaracion de Variables
-	Encuestado *ptr;
+	Encuestado *ptr, *male_younger, *male_older, *female_younger, *female_older;
 	
-	char options[][50] = {"Agregar Encuestados", 
+	char options[][60] = {"Agregar Encuestados", 
 		"Imprimir Primeros 10 Encuestados",
 		"Imprimir Todos los Encuestados",
+		"Imprimir Encuestados (Por Clasificacion)",
 		"Finalizar Encuesta"};
 			
-	int n = 0, size = 0, max_size = 50, opt, n_opt = 4, true = 1;
+	int n = 0, size = 0, max_size = 50, opt, n_opt = 5, true = 1, 
+		male_younger_size[] = {0}, male_older_size[] = {0}, 
+		female_younger_size[] = {0}, female_older_size[] = {0};
 		
-	// Asignando memoria para max_size de la estructura Encuestado
+	// Asignando memoria con valor max_size de la estructura Encuestado
 	ptr = (Encuestado*) malloc(max_size * sizeof(Encuestado));
+	male_younger = (Encuestado*) malloc(max_size * sizeof(Encuestado));
+	male_older = (Encuestado*) malloc(max_size * sizeof(Encuestado));
+	female_younger = (Encuestado*) malloc(max_size * sizeof(Encuestado));
+	female_older = (Encuestado*) malloc(max_size * sizeof(Encuestado));
 	
 	do {
 		printf("----- Programa de Encuestas -----\n\n");
 		
 		// Mostrar Opciones
-		display_stgs(n_opt, 50, options); printf("\n");
+		display_stgs(n_opt, 60, options); printf("\n");
 		
 		// Elegir Opcion
 		opt = get_option(1, n_opt, "Opcion");
@@ -62,6 +79,7 @@ int main() {
 		
 		// Acciones
 		switch(opt) {
+			// Registro de Datos
 			case 1:
 				/*
 				 * Si el espacio asignado en memoria
@@ -95,22 +113,44 @@ int main() {
 
 				break;
 				
-			case 2:								
+			// Muestra los primeros 10 encuestados
+			case 2:
 				if (size > 10) {
-					display(ptr, 10);
+					display(ptr, 10, "Primeros 10 Encuestados");
 				} else {
-					display(ptr, size);
+					display(ptr, size, "Primeros 10 Encuestados");
 				}
 				
 				clear();
 				
 				break;
 				
+			// Muestra todos los encuestados
 			case 3:
-				display(ptr, size); clear();
+				display(ptr, size, "Todos los Encuestados"); clear();
 				break;
 				
-			case 4:
+			// Separa los Datos por Categorias
+			case 4:			
+				if (size <= 0) {
+					printf("No hay registros\n");
+				} else {
+					organize(ptr, male_younger, female_younger, 
+						male_older, female_older, size, male_younger_size, 
+						female_younger_size, male_older_size, female_older_size
+					);
+										
+					display(male_younger, male_younger_size[0], "Masculinos (Edad < 25)"); printf("\n");
+					display(male_older, male_older_size[0], "Masculinos (Edad > 25)"); printf("\n");
+					display(female_younger, female_younger_size[0], "Femeninos  (Edad < 25)"); printf("\n");
+					display(female_older, female_older_size[0], "Femeninos  (Edad > 25)"); printf("\n");
+				}
+
+				// Mostrar la informacion organizada
+				clear();
+				break;
+			
+			case 5:
 			default:
 				true = 0;
 				break;
@@ -243,15 +283,51 @@ void get_information(Encuestado *ptr, int n, int size) {
 	
 }
 
+// Funcion que Organiza los Datos
+void organize(
+	Encuestado *ptr, Encuestado *male_younger, Encuestado *female_younger,
+	Encuestado *male_older, Encuestado *female_older,
+	int size, int male_younger_size[0], int female_younger_size[0],
+	int male_older_size[0], int female_older_size[0]
+) {
+		
+	int i;
+				
+	for (i = 0; i < size; i++) {
+		if (strcmp((ptr + i)->sex, "M") == 0) {
+			
+			if ((ptr + i)->age < 25) {
+				memmove((male_younger + male_younger_size[0]), (ptr + i), sizeof(Encuestado));
+				male_younger_size[0]++;
+			} else {
+				memmove((male_older + male_older_size[0]), (ptr + i), sizeof(Encuestado));
+				male_older_size[0]++;
+			}
+			
+		} else {
+			
+			if ((ptr + i)->age < 25) {
+				memmove((female_younger + female_younger_size[0]), (ptr + i), sizeof(Encuestado));
+				female_younger_size[0]++;
+			} else {
+				memmove((female_older + female_older_size[0]), (ptr + i), sizeof(Encuestado));
+				female_older_size[0]++;
+			}
+			
+		}
+	}
+	
+}
+
 // Funcion que muestra la informacion
-void display(Encuestado *ptr, int n) {
+void display(Encuestado *ptr, int n, char *str) {
 	int i, j;
 	
+	printf("----- %s -----", str);
+	
 	if (n <= 0) {
-		printf("No hay Registros\n\n");
+		printf("\n\nNo hay Registros\n\n");
 	} else {
-		printf("----- Encuestados -----");
-		
 		for (i = 0; i < n; i++) {
 			printf("\n\n--- %03d ---\n\n", i + 1);
 			
