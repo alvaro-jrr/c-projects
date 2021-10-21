@@ -119,8 +119,8 @@ int main() {
 						female_younger = realloc(female_younger, max_size * sizeof(Encuestado));
 						female_older = realloc(female_older, max_size * sizeof(Encuestado));
 						
-						bool = ptr == NULL && male_younger == NULL && male_older == NULL && 
-							female_younger == NULL && female_older == NULL;
+						bool = ptr == NULL || male_younger == NULL || male_older == NULL || 
+							female_younger == NULL || female_older == NULL;
 											
 						if (bool) {
 							printf("=> Error: La Memoria no fue Asignada");
@@ -135,15 +135,10 @@ int main() {
 					 * pide el numero de personas a
 					 * encuestar.
 					*/
-					
-					bool = (ptr != NULL && male_younger != NULL && male_older != NULL && 
-						female_younger != NULL && female_older != NULL);
 									
-					if (bool) {
-						n = (int) get_option(1, max_size - size, "Numero de Personas a Encuestar");
-						get_information(ptr, n, size);
-						size += n;					
-					}
+					n = (int) get_option(1, max_size - size, "Numero de Personas a Encuestar");
+					get_information(ptr, n, size);
+					size += n;					
 
 					break;
 					
