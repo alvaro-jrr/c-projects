@@ -410,20 +410,16 @@ void display(Reservado *ptr, int n, int is_confirmed, char *str) {
 	
 	printf("----- %s -----", str);
 	
-	if (n <= 0) {
-		printf("\n\nNo hay Registros\n\n");
-	} else {
-		for (i = 0; i < n; i++) {
-			if ((ptr + i)->is_confirmed == is_confirmed) {
-				printf("\n\n--- %02d ---\n\n", i + 1);
-				
-				printf("Nombre: %s\nApellido: %s\nEmail: %s\nCedula: %d\nEdad: %d\nTelefono: %s\nAsiento: %d",
-					(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->email,
-					(ptr + i)->id, (ptr + i)->age, (ptr + i)->phone, (ptr + i)->seat_id
-				);
-				
-				true = 0;
-			}
+	for (i = 0; i < n; i++) {
+		if ((ptr + i)->is_confirmed == is_confirmed) {
+			printf("\n\n--- %02d ---\n\n", i + 1);
+			
+			printf("Nombre: %s\nApellido: %s\nEmail: %s\nCedula: %d\nEdad: %d\nTelefono: %s\nAsiento: %d",
+				(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->email,
+				(ptr + i)->id, (ptr + i)->age, (ptr + i)->phone, (ptr + i)->seat_id
+			);
+			
+			true = 0;
 		}
 	}
 	
