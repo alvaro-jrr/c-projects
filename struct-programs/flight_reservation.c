@@ -13,18 +13,22 @@ typedef struct Reserva {
 	int  id;
 	int  seat_id;
 	int  is_confirmed;
+	int  is_empty;
+	int  registered_before;
 } Reservado;
 
 // ----- Declaracion de Funciones -----
 
 float get_n();
-int get_option(int min, int max, char *str);
-int get_seat(Reservado *ptr, int size);
-void clear();
-void validate(Reservado *ptr, int size, int type, char *prompt, char *success);
-void display_stgs(int n, int m, char arr[n][m]);
-void get_information(Reservado *ptr, int n, int size);
-void display(Reservado *ptr, int n, int is_confirmed, char *str);
+int   get_option(int min, int max, char *str);
+int   get_seat(Reservado *ptr, int size);
+int   get_empty(Reservado *ptr, int size[], int max);
+int   is_full(Reservado *ptr, int max_size);
+void  clear();
+void  validate(Reservado *ptr, int size, int type, char *prompt, char *success);
+void  display_stgs(int n, int m, char arr[n][m]);
+void  get_information(Reservado *ptr, int n, int size[]);
+void  display(Reservado *ptr, int n, int is_confirmed, char *str);
 
 // ----- Main -----
 
@@ -50,12 +54,27 @@ int main() {
 		"Mostrar Confirmados",
 		"Finalizar Reserva"};
 		
-	int n = 0, size = 0, max_size = 80, opt, n_opt = 6, true = 1;
+	int i, n = 0, size[] = {0}, max_size = 80, opt, n_opt = 6, true = 1;
 	
 	// Asignando memoria con valor max_size de la estructura Reservado
 	ptr = (Reservado*) malloc(max_size * sizeof(Reservado));
 	
 	if (ptr != NULL) {
+		
+		/*
+		 * Inicializando is_empty a 1,
+		 * declarando que esta vacio.
+		 * 
+		 * Y registered_before a 0,
+		 * declarando que no ha sido
+		 * registrado anteriormente.
+		*/
+				
+		for (i = 0; i < max_size; i++) {
+			(ptr + i)->is_empty = 1;
+			(ptr + i)->registered_before = 0;
+		}
+		
 		do {
 			printf("----- Programa de Reservas -----\n\n");
 			
@@ -72,12 +91,11 @@ int main() {
 				
 				// Reservar Asiento
 				case 1:
-					if (size == max_size) {
+					if ((size[0] == max_size) && (is_full(ptr, max_size))) {
 						printf("Lo sentimos, todos los asientos estan ocupados\n");
 					} else {
-						n = (int) get_option(1, max_size - size, "Numero de Personas a Reservar");
-						get_information(ptr, n, size);
-						size += n;	
+						n = (int) get_option(1, max_size - size[0], "Numero de Personas a Reservar");
+						get_information(ptr, n, size);	
 					}
 										
 					clear();
@@ -86,7 +104,7 @@ int main() {
 					
 				// Confirmar Reservacion
 				case 2:
-					validate(ptr, size, 1, "Nro. de Asiento a Confirmar", 
+					validate(ptr, size[0], 1, "Nro. de Asiento a Confirmar", 
 						"Reservacion confirmada existosamente"
 					);
 						
@@ -95,7 +113,7 @@ int main() {
 				
 				// Cancelar Reservacion
 				case 3:
-					validate(ptr, size, -1, "Nro. de Asiento a Cancelar", 
+					validate(ptr, size[0], -1, "Nro. de Asiento a Cancelar", 
 						"Reservacion cancelada existosamente"
 					);
 					
@@ -104,14 +122,14 @@ int main() {
 				
 				// Mostrar Reservaciones en Espera
 				case 4:
-					display(ptr, size, 0, "Reservaciones en Espera");
+					display(ptr, size[0], 0, "Reservaciones en Espera");
 					printf("\n");
 					clear();
 					break;
 					
 				// Mostrar Reservaciones Confirmadas
 				case 5:
-					display(ptr, size, 1, "Reservaciones Confirmados");
+					display(ptr, size[0], 1, "Reservaciones Confirmados");
 					printf("\n");
 					clear();
 					break;
@@ -241,49 +259,108 @@ int get_seat(Reservado *ptr, int size) {
 	return n;
 }
 
+// Obtener posicion vacia
+int get_empty(Reservado *ptr, int size[], int max) {
+	int i, n, size_b = size[0];
+	
+	if (size_b == 0) {
+		n = 0;
+		size[0]++;
+	} else {
+		for (i = 0; i < max; i++) {
+						
+			/*
+			 * Si se cumple que esta vacio
+			 * y que no ha sido registrado antes.
+			 * Entonces, es un registro nuevo y
+			 * se incrementa el contador de 
+			 * registros.
+			 * 
+			 * Si se cumple que esta vacio y que
+			 * ademas, ha sido registrado antes.
+			 * No se incrementa el contador de registros.
+			*/
+			
+			if (((ptr + i)->is_empty == 1) && ((ptr + i)->registered_before == 0)) {
+				n = i;
+				size[0]++;
+				break;
+			} else  if (((ptr + i)->is_empty == 1) && ((ptr + i)->registered_before == 1)) {
+				n = i;
+				break;
+			} else {
+				n = -1;
+			}
+		}
+	}
+
+	return n;
+}
+
+// Verificar si esta completa los registros
+
+int is_full(Reservado *ptr, int max_size) {
+	int i, n = 0, true = 1;
+	
+	for (i = 0; i < max_size; i++) {
+		if ((ptr + i)->is_empty == 0) {
+			n++;
+		}
+	}
+	
+	/* 
+	 * Si n es igual a max_size
+	 * entonces, si esta completo.
+	 * 
+	 * Sino, no lo esta y true = 0.
+	*/
+	
+	if (n == max_size) {
+		true = 1;
+	} else {
+		true = 0;
+	}
+		
+	return true;
+}
 
 // Funcion que toma la informacion
-void get_information(Reservado *ptr, int n, int size) {
-	int i;
-		
-	for (i = size; i < (n + size); i++) {
+void get_information(Reservado *ptr, int n, int size[]) {
+	int i, size_b = size[0], add_index;
+			
+	for (i = size_b; i < (n + size_b); i++) {
 		// --- Obtencion de la informacion ---
 		
-		// Datos Personales
+		// Obtener posicion donde agregar el registro
+		add_index = get_empty(ptr, size, (n + size_b));
+				
+		// Obtener Datos Personales
 		
-		printf("\nNombre: "); scanf("%s", (ptr + i)->name); clear();
+		printf("\nNombre: "); scanf("%s", (ptr + add_index)->name); clear();	
+		printf("Apellido: "); scanf("%s", (ptr + add_index)->lastname); clear();
+		printf("Email: "); scanf("%s", (ptr + add_index)->email); clear();
+		printf("Telefono: "); scanf("%s", (ptr + add_index)->phone); clear();
+		(ptr + add_index)->id = get_option(1, 2147483647, "Cedula");
+		(ptr + add_index)->age = get_option(1, 122, "Edad");
 		
-		printf("Apellido: "); scanf("%s", (ptr + i)->lastname); clear();
-		
-		printf("Email: "); scanf("%s", (ptr + i)->email); clear();
-		
-		printf("Telefono: "); scanf("%s", (ptr + i)->phone); clear();
-		
-		(ptr + i)->id = get_option(1, 2147483647, "Cedula");
-		
-		(ptr + i)->age = get_option(1, 122, "Edad");
-		
-		// Asiento
-		
-		(ptr + i)->seat_id = get_seat(ptr, i);
-		
-		// Establecer valor para is_confirmed
+		// Obtener Asiento
+		(ptr + add_index)->seat_id = get_seat(ptr, i);
 		
 		/*
-		 * Si is_confirmed == 0,
-		 * entonces quiere decir que aun
-		 * no esta confirmado.
+		 * Establecemos el valor de is_confirmed a 0,
+		 * que indica que esta en espera.
 		 * 
-		 * Si is_confirmed == 1
-		 * entonces el asiento ha sido
-		 * confirmado.
+		 * Establecemos is_empty a 0, ya que indica
+		 * que no esta vacio.
 		 * 
-		 * Si is_confirmed == -1,
-		 * entonces el asiento ha sido
-		 * cancelado.
+		 * Establecemos registered_before a 1,
+		 * que indica que ha sido registrado
+		 * anteriormente.
 		*/
 		
-		(ptr + i)->is_confirmed = 0;
+		(ptr + add_index)->is_confirmed = 0;
+		(ptr + add_index)->is_empty = 0;
+		(ptr + add_index)->registered_before = 1;
 	}
 }
 
@@ -299,6 +376,20 @@ void validate(Reservado *ptr, int size, int type, char *prompt, char *success) {
 			
 			for (i = 0; i < size; i++) {
 				if (((ptr + i)->is_confirmed == 0) && ((ptr + i)->seat_id == n)) {
+					
+					/*
+					 * Cuando type tiene valor de -1,
+					 * entonces se esta cancelando
+					 * un registro. Por lo tanto,
+					 * se establece que es vacio
+					 * y el asiento a 0.
+					*/
+					
+					if (type == -1) {
+						(ptr + i)->is_empty = 1;
+						(ptr + i)->seat_id  = 0;
+					}
+					
 					(ptr + i)->is_confirmed = type;
 					printf("%s\n", success);
 					true = 0;
@@ -324,7 +415,7 @@ void display(Reservado *ptr, int n, int is_confirmed, char *str) {
 	} else {
 		for (i = 0; i < n; i++) {
 			if ((ptr + i)->is_confirmed == is_confirmed) {
-				printf("\n\n--- %03d ---\n\n", i + 1);
+				printf("\n\n--- %02d ---\n\n", i + 1);
 				
 				printf("Nombre: %s\nApellido: %s\nEmail: %s\nCedula: %d\nEdad: %d\nTelefono: %s\nAsiento: %d",
 					(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->email,
