@@ -11,6 +11,7 @@ typedef struct Ciudadanos {
 	char nationality[50];
 	char sex[5];
 	int  age;
+	int  id;
 	int  is_active;
 	int  is_military;
 	int  plane_feet;
@@ -23,7 +24,7 @@ int   get_option(int min, int max, char *str);
 void  clear();
 void  display_stgs(int n, int m, char arr[n][m]);
 void  get_state(Ciudadano *ptr, int size, int age);
-void  get_information(Ciudadano *ptr, int n, int size);
+void  get_information(Ciudadano *ptr, int n, int size[]);
 void  display(Ciudadano *ptr, int size, char *type, char *prompt);
 
 // ----- Main -----
@@ -49,7 +50,7 @@ int main() {
 		"Mostrar con Capacidad de Prestar Servicio Militar",
 		"Finalizar"};
 		
-	int n = 0, size = 0, max_size = 100, opt, n_opt = 5, true = 1;
+	int n = 0, size[] = {0}, max_size = 100, opt, n_opt = 5, true = 1;
 	
 	// Asignando memoria con valor max_size de la estructura Ciudadano
 	ptr = (Ciudadano*) malloc(max_size * sizeof(Ciudadano));
@@ -72,7 +73,7 @@ int main() {
 				
 				// Agregar Ciudadano
 				case 1:
-					if (max_size == size) {
+					if (max_size == size[0]) {
 						printf("El Espacio Asignado se ha llenado\nAsignando mas memoria...\n");
 						max_size += 50;
 						ptr = realloc(ptr, max_size * sizeof(Ciudadano));
@@ -85,28 +86,28 @@ int main() {
 						}
 					}
 					
-					n = (int) get_option(1, max_size - size, "Numero de Personas a Registrar");
+					n = (int) get_option(1, max_size - size[0], "Numero de Personas a Registrar");
 					get_information(ptr, n, size);
-					size += n;
+					//size += n;
 					clear();
 					
 					break;
 					
 				// Mostrar todos los Registros
 				case 2:
-					display(ptr, size, "all", "Ciudadanos Registrados"); printf("\n");
+					display(ptr, size[0], "all", "Ciudadanos Registrados"); printf("\n");
 					clear();
 					break;
 					
 				// Mostrar los que pueden votar
 				case 3:
-					display(ptr, size, "vote", "Ciudadanos Capaces de Votar"); printf("\n");
+					display(ptr, size[0], "vote", "Ciudadanos Capaces de Votar"); printf("\n");
 					clear();
 					break;
 					
 				// Mostrar los que pueden prestar servicio
 				case 4:
-					display(ptr, size, "militar", "Ciudadanos que Pueden Realizar Servicio"); printf("\n");
+					display(ptr, size[0], "militar", "Ciudadanos que Pueden Realizar Servicio"); printf("\n");
 					clear();
 					break;
 					
@@ -230,62 +231,83 @@ void get_state(Ciudadano *ptr, int size, int age) {
 }
 
 // Funcion que toma la informacion
-void get_information(Ciudadano *ptr, int n, int size) {	
-	int i, aux;
+void get_information(Ciudadano *ptr, int n, int size[]) {	
+	int i, j, aux, size_b = size[0], true = 1;
 			
-	for (i = size; i < (n + size); i++) {
+	for (i = size_b; i < (n + size_b); i++) {
 		// --- Obtencion de la informacion ---
 				
 		// Obtener Datos Personales
 		
 		printf("\nNombre: "); scanf("%s", (ptr + i)->name); clear();	
 		printf("Apellido: "); scanf("%s", (ptr + i)->lastname); clear();
-		aux = (int) get_option(0, 1, "Sexo (M = 1 | F = 0)");
 		(ptr + i)->age = get_option(1, 122, "Edad");
+		(ptr + i)->id = get_option(1, 2147483647, "Cedula");
 		
-		// Si aux == 1 es masculino, sino es femenino
+		for (j = 0; j < i; j++) {
+			if ((ptr + i)->id == (ptr + j)->id) {
+				true = 0;
+				printf("\nYa existe un ciudadano con la misma cedula\nEste no sera registrado\n");
+				break;
+			} else {
+				true = 1;
+			}
+		}
 		
-		if (aux) {
-			// Si es masculino
-			strcpy((ptr + i)->sex, "M");
+		// Si la cedula no es diferente a uno existente
+		if (true) {
+			aux = (int) get_option(0, 1, "Sexo (M = 1 | F = 0)");
 			
-			(ptr + i)->plane_feet = (int) get_option(0, 1, "Pies Planos (Si = 1 | No = 0)");
-						
-			if ((ptr + i)->age > 17) {
-				(ptr + i)->is_military = (int) get_option(0, 1, "Es o fue Militar? (Si = 1 | No = 0)");
+			// Si aux == 1 es masculino, sino es femenino
+			
+			if (aux) {
+				// Si es masculino
+				strcpy((ptr + i)->sex, "M");
 				
-				if ((ptr + i)->is_military) {
-					(ptr + i)->is_active = (int) get_option(0, 1, "Esta Activo? (Si = 1 | No = 0)");	
+				(ptr + i)->plane_feet = (int) get_option(0, 1, "Pies Planos (Si = 1 | No = 0)");
+							
+				if ((ptr + i)->age > 17) {
+					(ptr + i)->is_military = (int) get_option(0, 1, "Es o fue Militar? (Si = 1 | No = 0)");
+					
+					if ((ptr + i)->is_military) {
+						(ptr + i)->is_active = (int) get_option(0, 1, "Esta Activo? (Si = 1 | No = 0)");	
+					} else {
+						(ptr + i)->is_active = 0;
+					}
+					
 				} else {
 					(ptr + i)->is_active = 0;
+					(ptr + i)->is_military = 0;
 				}
 				
 			} else {
-				(ptr + i)->is_active = 0;
-				(ptr + i)->is_military = 0;
+				strcpy((ptr + i)->sex, "F");
+				(ptr + i)->plane_feet = -1;
+				(ptr + i)->is_military = -1;
+				(ptr + i)->is_active = -1;
 			}
 			
+			aux = (int) get_option(0, 1, "Nacionalidad (Venezolano/a = 1 | Extranjero/a = 0)");
+			
+			if (aux) {
+				strcpy((ptr + i)->nationality, "Venezolano/a");
+			} else {
+				strcpy((ptr + i)->nationality, "Extranjero/a");
+			}
+					
+			get_state((ptr + i), size[0], (ptr + i)->age);
+			
+			// Se suma 1 al numero de agregados
+			size[0]++;	
 		} else {
-			strcpy((ptr + i)->sex, "F");
-			(ptr + i)->plane_feet = -1;
-			(ptr + i)->is_military = -1;
-			(ptr + i)->is_active = -1;
+			i--;
+			n--;
 		}
-		
-		aux = (int) get_option(0, 1, "Nacionalidad (Venezolano/a = 1 | Extranjero/a = 0)");
-		
-		if (aux) {
-			strcpy((ptr + i)->nationality, "Venezolano/a");
-		} else {
-			strcpy((ptr + i)->nationality, "Extranjero/a");
-		}
-				
-		get_state((ptr + i), size, (ptr + i)->age);
 	}
 }
 
 // Funcion que muestra la informacion
-void  display(Ciudadano *ptr, int size, char *type, char *prompt) {
+void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 	int i, bool, true = 1;
 	
 	printf("----- %s -----", prompt);
@@ -294,9 +316,9 @@ void  display(Ciudadano *ptr, int size, char *type, char *prompt) {
 		for (i = 0; i < size; i++) {
 			printf("\n\n--- %03d ---\n\n", i + 1);
 			
-			printf("Nombre: %s\nApellido: %s\nEdad: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
-				(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->age, (ptr + i)->sex,
-				(ptr + i)->nationality, (ptr + i)->civil_state
+			printf("Nombre: %s\nApellido: %s\nEdad: %d\nCedula: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
+				(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->age, (ptr + i)->id, 
+				(ptr + i)->sex, (ptr + i)->nationality, (ptr + i)->civil_state
 			);
 			
 			if (strcmp((ptr + i)->sex, "M") == 0) {
@@ -313,9 +335,9 @@ void  display(Ciudadano *ptr, int size, char *type, char *prompt) {
 			if ((ptr + i)->age >= 18) {
 				printf("\n\n--- %03d ---\n\n", i + 1);
 				
-				printf("Nombre: %s\nApellido: %s\nEdad: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
-					(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->age, (ptr + i)->sex,
-					(ptr + i)->nationality, (ptr + i)->civil_state
+				printf("Nombre: %s\nApellido: %s\nEdad: %d\nCedula: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
+					(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->age, (ptr + i)->id,  
+					(ptr + i)->sex, (ptr + i)->nationality, (ptr + i)->civil_state
 				);
 				
 				if (strcmp((ptr + i)->sex, "M") == 0) {
@@ -331,20 +353,22 @@ void  display(Ciudadano *ptr, int size, char *type, char *prompt) {
 	} else if (strcmp(type, "militar") == 0) {		
 		for (i = 0; i < size; i++) {
 			
+			
+			
 			bool = (strcmp((ptr + i)->sex, "M") == 0) 
-				&& (strcmp((ptr + i)->civil_state, "Venezolano/a") == 0)
+				&& (strcmp((ptr + i)->nationality, "Venezolano/a") == 0)
 				&& (strcmp((ptr + i)->civil_state, "Soltero/a") == 0)
 				&& ((ptr + i)->age >= 18) 
 				&& ((ptr + i)->age <= 30)
 				&& ((ptr + i)->is_military == 0)
-				&& ((ptr + i)->is_active == 0) ;
+				&& ((ptr + i)->is_active == 0);
 			
 			if (bool) {
 				printf("\n\n--- %03d ---\n\n", i + 1);
 				
-				printf("Nombre: %s\nApellido: %s\nEdad: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
-					(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->age, (ptr + i)->sex,
-					(ptr + i)->nationality, (ptr + i)->civil_state
+				printf("Nombre: %s\nApellido: %s\nEdad: %d\nCedula: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
+					(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->id, (ptr + i)->age, 
+					(ptr + i)->sex, (ptr + i)->nationality, (ptr + i)->civil_state
 				);
 				
 				printf("\nPie Plano: %d\nMilitar: %d\nEstado Activo: %d",
