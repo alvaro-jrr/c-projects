@@ -341,9 +341,9 @@ void get_information(Encuestado *ptr, int n, int size[]) {
 		
 		if (true) {
 			// Si aux == 1 es masculino, sino es femenino
-			aux = (int) get_option(1, 2, "Sexo (M = 1 | F = 2)");
+			aux = (int) get_option(0, 1, "Sexo (M = 1 | F = 0)");
 			
-			if (aux == 1) {
+			if (aux) {
 				strcpy((ptr + i)->sex, "M");
 			} else {
 				strcpy((ptr + i)->sex, "F");
@@ -380,6 +380,12 @@ void get_information(Encuestado *ptr, int n, int size[]) {
 			
 			size[0]++;
 		} else {
+			/*
+			 * Si la cedula estaba anteriormente
+			 * registrada. Entonces, resta en 1
+			 * a i y a n.
+			*/
+			
 			i--;
 			n--;
 		}
