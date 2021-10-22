@@ -28,7 +28,7 @@ void organize(
 
 
 void display_stgs(int n, int m, char arr[n][m]);
-void get_information(Encuestado *ptr, int n, int size);
+void get_information(Encuestado *ptr, int n, int size[]);
 void display(Encuestado *ptr, int n, char *str);
 void clear();
 
@@ -55,7 +55,7 @@ int main() {
 		"Imprimir Encuestados (Por Clasificacion)",
 		"Finalizar Encuesta"};
 			
-	int n = 0, size = 0, max_size = 50, opt, n_opt = 5, true = 1,
+	int n = 0, size[] = {0}, max_size = 50, opt, n_opt = 5, true = 1,
 		size_organized = 0, male_younger_size[] = {0}, male_older_size[] = {0}, 
 		female_younger_size[] = {0}, female_older_size[] = {0},
 		bool;
@@ -110,7 +110,7 @@ int main() {
 					 * utilizado en el programa.
 					*/
 					
-					if (max_size == size) {
+					if (max_size == size[0]) {
 						printf("El Espacio Asignado se ha llenado\nAsignando mas memoria...\n");
 						max_size += 50;
 						ptr = realloc(ptr, max_size * sizeof(Encuestado));
@@ -136,10 +136,8 @@ int main() {
 					 * encuestar.
 					*/
 									
-					n = (int) get_option(1, max_size - size, "Numero de Personas a Encuestar");
+					n = (int) get_option(1, max_size - size[0], "Numero de Personas a Encuestar");
 					get_information(ptr, n, size);
-					size += n;					
-
 					break;
 					
 				// Muestra los primeros 10 encuestados
@@ -155,10 +153,10 @@ int main() {
 					 * se tengan actualmente.
 					*/
 					
-					if (size > 10) {
+					if (size[0] > 10) {
 						display(ptr, 10, "Primeros 10 Encuestados");
 					} else {
-						display(ptr, size, "Primeros 10 Encuestados");
+						display(ptr, size[0], "Primeros 10 Encuestados");
 					}
 					
 					clear();
@@ -167,17 +165,17 @@ int main() {
 					
 				// Muestra todos los encuestados
 				case 3:
-					display(ptr, size, "Todos los Encuestados"); clear();
+					display(ptr, size[0], "Todos los Encuestados"); clear();
 					break;
 					
 				// Separa los Datos por Categorias
 				case 4:			
-					if (size <= 0) {
+					if (size[0] <= 0) {
 						printf("No hay registros\n");
 					} else {
 																		
 						organize(ptr, male_younger, female_younger, 
-							male_older, female_older, size_organized, size, 
+							male_older, female_older, size_organized, size[0], 
 							male_younger_size, female_younger_size, male_older_size, 
 							female_older_size
 						);
@@ -196,7 +194,7 @@ int main() {
 						 * errores.
 						*/
 						
-						size_organized = size;
+						size_organized = size[0];
 						
 						// Mostrar la informacion organizada										
 						display(male_younger, male_younger_size[0], "Masculinos (Edad < 25)"); printf("\n");
@@ -219,7 +217,7 @@ int main() {
 			getchar();
 			system(clear_str);
 			
-		} while (true == 1);	
+		} while (true);	
 	} else {
 		printf("No se pudo asignar el espacio en memoria\n\n----- Finalizado -----");
 		exit(0);
@@ -314,10 +312,10 @@ void display_stgs(int n, int m, char arr[n][m]) {
 }
 
 // Funcion que toma la informacion
-void get_information(Encuestado *ptr, int n, int size) {
-	int i, j, aux;
+void get_information(Encuestado *ptr, int n, int size[]) {
+	int i, j, aux, size_b = size[0], true = 1;
 		
-	for (i = size; i < (n + size); i++) {	
+	for (i = size_b; i < (n + size_b); i++) {	
 	
 		// Obtencion de la informacion
 		
@@ -325,50 +323,67 @@ void get_information(Encuestado *ptr, int n, int size) {
 		
 		printf("Apellido: "); scanf("%s", (ptr + i)->lastname); clear();
 		
-		aux = (int) get_option(1, 2, "Sexo (M = 1 | F = 2)");
-		
-		// Si aux == 1 es masculino, sino es femenino
-		
-		if (aux == 1) {
-			strcpy((ptr + i)->sex, "M");
-		} else {
-			strcpy((ptr + i)->sex, "F");
-		}
-						
-		(ptr + i)->id = get_option(1, 2147483647, "Cedula");
-		
 		(ptr + i)->age = get_option(1, 122, "Edad");
 		
-		printf("\nLista de Canciones Favs. (en orden de preferencia):\n\n"); clear();
+		(ptr + i)->id = get_option(1, 2147483647, "Cedula");
 		
-		for (j = 0; j < 5; j++) {
-			printf("   %d) ", j + 1);
-			fgets((ptr + i)->songs[j], sizeof((ptr + i)->songs[j]), stdin);
-			
-			// Eliminando la \n al hacer enter
-			
-			/*
-			 * Accedemos a la ultima letra de la
-			 * cadena introducida y se cambia la 
-			 * nueva linea \n, por \0 el cual
-			 * indica que es el final de la cadena.
-			*/
-			
-			(ptr + i)->songs[j][strlen((ptr + i)->songs[j]) - 1] = '\0';
-			
-			/*
-			 * Si la cadena esta vacia, entonces
-			 * reduce en 1 el valor de j. Para
-			 * que vuelva a pedir la introduccion
-			 * de la cancion en esa posicion.
-			*/
-			
-			if (strlen((ptr + i)->songs[j]) == 0) {
-				j--;
+		// Verificar que sea unica la cedula
+		for (j = 0; j < i; j++) {
+			if ((ptr + i)->id == (ptr + j)->id) {
+				true = 0;
+				printf("\nYa existe un ciudadano con la misma cedula\nEste no sera registrado\n");
+				clear();
+				break;
+			} else if ((j + 1) == i){
+				true = 1;
 			}
 		}
+		
+		if (true) {
+			// Si aux == 1 es masculino, sino es femenino
+			aux = (int) get_option(1, 2, "Sexo (M = 1 | F = 2)");
+			
+			if (aux == 1) {
+				strcpy((ptr + i)->sex, "M");
+			} else {
+				strcpy((ptr + i)->sex, "F");
+			}
+							
+			printf("\nLista de Canciones Favs. (en orden de preferencia):\n\n"); clear();
+			
+			for (j = 0; j < 5; j++) {
+				printf("   %d) ", j + 1);
+				fgets((ptr + i)->songs[j], sizeof((ptr + i)->songs[j]), stdin);
+				
+				// Eliminando la \n al hacer enter
+				
+				/*
+				 * Accedemos a la ultima letra de la
+				 * cadena introducida y se cambia la 
+				 * nueva linea \n, por \0 el cual
+				 * indica que es el final de la cadena.
+				*/
+				
+				(ptr + i)->songs[j][strlen((ptr + i)->songs[j]) - 1] = '\0';
+				
+				/*
+				 * Si la cadena esta vacia, entonces
+				 * reduce en 1 el valor de j. Para
+				 * que vuelva a pedir la introduccion
+				 * de la cancion en esa posicion.
+				*/
+				
+				if (strlen((ptr + i)->songs[j]) == 0) {
+					j--;
+				}
+			}
+			
+			size[0]++;
+		} else {
+			i--;
+			n--;
+		}
 	}
-	
 }
 
 // Funcion que Organiza los Datos
@@ -431,5 +446,4 @@ void display(Encuestado *ptr, int n, char *str) {
 			}
 		}
 	}
-	
 }
