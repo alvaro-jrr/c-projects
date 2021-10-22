@@ -339,6 +339,12 @@ void get_information(Encuestado *ptr, int n, int size[]) {
 			}
 		}
 		
+		/*
+		 * Si la cedula es diferente
+		 * a uno registrado anteriormente.
+		 * Entonces continua el registro.
+		*/
+		
 		if (true) {
 			// Si aux == 1 es masculino, sino es femenino
 			aux = (int) get_option(0, 1, "Sexo (M = 1 | F = 0)");
