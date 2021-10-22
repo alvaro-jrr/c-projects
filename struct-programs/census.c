@@ -254,11 +254,15 @@ void get_information(Ciudadano *ptr, int n, int size[]) {
 			}
 		}
 		
-		// Si la cedula no es diferente a uno existente
+		/*
+		 * Si la cedula es diferente
+		 * a uno registrado anteriormente.
+		 * Entonces continua el registro.
+		*/
+		
 		if (true) {
-			aux = (int) get_option(0, 1, "Sexo (M = 1 | F = 0)");
-			
 			// Si aux == 1 es masculino, sino es femenino
+			aux = (int) get_option(0, 1, "Sexo (M = 1 | F = 0)");
 			
 			if (aux) {
 				// Si es masculino
@@ -300,6 +304,12 @@ void get_information(Ciudadano *ptr, int n, int size[]) {
 			// Se suma 1 al numero de agregados
 			size[0]++;	
 		} else {
+			/*
+			 * Si la cedula estaba anteriormente
+			 * registrada. Entonces, resta en 1
+			 * a i y a n.
+			*/
+			
 			i--;
 			n--;
 		}
@@ -311,6 +321,21 @@ void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 	int i, bool, true = 1;
 	
 	printf("----- %s -----", prompt);
+	
+	/*
+	 * Si type es igual a all,
+	 * entonces imprime todos los 
+	 * registros.
+	 * 
+	 * Si type es igual a vote,
+	 * imprimte todos los que
+	 * son capaces de votar.
+	 * 
+	 * Si type es igual a militar,
+	 * imprime todos los que son
+	 * capaces de hacer servicio
+	 * militar.
+	*/
 	
 	if (strcmp(type, "all") == 0) {
 		for (i = 0; i < size; i++) {
@@ -353,8 +378,6 @@ void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 	} else if (strcmp(type, "militar") == 0) {		
 		for (i = 0; i < size; i++) {
 			
-			
-			
 			bool = (strcmp((ptr + i)->sex, "M") == 0) 
 				&& (strcmp((ptr + i)->nationality, "Venezolano/a") == 0)
 				&& (strcmp((ptr + i)->civil_state, "Soltero/a") == 0)
@@ -378,7 +401,7 @@ void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 				
 				true = 0;
 			}
-		}	
+		}
 	}
 	
 	if (true) {
