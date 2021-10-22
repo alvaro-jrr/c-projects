@@ -249,7 +249,7 @@ void get_information(Ciudadano *ptr, int n, int size[]) {
 				true = 0;
 				printf("\nYa existe un ciudadano con la misma cedula\nEste no sera registrado\n");
 				break;
-			} else {
+			} else if ((j + 1) == i) {
 				true = 1;
 			}
 		}
