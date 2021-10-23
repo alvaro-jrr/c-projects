@@ -331,7 +331,7 @@ void get_information(Encuestado *ptr, int n, int size[]) {
 		for (j = 0; j < i; j++) {
 			if ((ptr + i)->id == (ptr + j)->id) {
 				true = 0;
-				printf("\nYa existe un ciudadano con la misma cedula\nEste no sera registrado\n");
+				printf("\nYa existe un encuestado con la misma cedula\nEste no sera registrado\n");
 				clear();
 				break;
 			} else if ((j + 1) == i){
