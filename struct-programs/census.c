@@ -322,13 +322,30 @@ void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 	
 	printf("----- %s -----", prompt);
 	
+	// Funcion que despliega la informacion de la posicion i
+	void show(int i, int is_male) {
+		printf("\n\n--- %03d ---\n\n", i + 1);
+		
+		printf("Nombre: %s\nApellido: %s\nEdad: %d\nCedula: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
+			(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->age, (ptr + i)->id, 
+			(ptr + i)->sex, (ptr + i)->nationality, (ptr + i)->civil_state
+		);
+		
+		if (is_male) {
+			printf("\nPie Plano: %d\nMilitar: %d\nEstado Activo: %d",
+				(ptr + i)->plane_feet, (ptr + i)->is_military,
+				(ptr + i)->is_active
+			);
+		}
+	}
+	
 	/*
 	 * Si type es igual a all,
 	 * entonces imprime todos los 
 	 * registros.
 	 * 
 	 * Si type es igual a vote,
-	 * imprimte todos los que
+	 * imprime todos los que
 	 * son capaces de votar.
 	 * 
 	 * Si type es igual a militar,
@@ -339,39 +356,13 @@ void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 	
 	if (strcmp(type, "all") == 0) {
 		for (i = 0; i < size; i++) {
-			printf("\n\n--- %03d ---\n\n", i + 1);
-			
-			printf("Nombre: %s\nApellido: %s\nEdad: %d\nCedula: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
-				(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->age, (ptr + i)->id, 
-				(ptr + i)->sex, (ptr + i)->nationality, (ptr + i)->civil_state
-			);
-			
-			if (strcmp((ptr + i)->sex, "M") == 0) {
-				printf("\nPie Plano: %d\nMilitar: %d\nEstado Activo: %d",
-					(ptr + i)->plane_feet, (ptr + i)->is_military,
-					(ptr + i)->is_active
-				);
-			}
-			
+			show(i, strcmp((ptr + i)->sex, "M") == 0);			
 			true = 0;
 		}
 	} else if (strcmp(type, "vote") == 0) {
 		for (i = 0; i < size; i++) {
 			if ((ptr + i)->age >= 18) {
-				printf("\n\n--- %03d ---\n\n", i + 1);
-				
-				printf("Nombre: %s\nApellido: %s\nEdad: %d\nCedula: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
-					(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->age, (ptr + i)->id,  
-					(ptr + i)->sex, (ptr + i)->nationality, (ptr + i)->civil_state
-				);
-				
-				if (strcmp((ptr + i)->sex, "M") == 0) {
-					printf("\nPie Plano: %d\nMilitar: %d\nEstado Activo: %d",
-						(ptr + i)->plane_feet, (ptr + i)->is_military,
-						(ptr + i)->is_active
-					);
-				}
-				
+				show(i, strcmp((ptr + i)->sex, "M") == 0);
 				true = 0;				
 			}
 		}
@@ -387,18 +378,7 @@ void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 				&& ((ptr + i)->is_active == 0);
 			
 			if (bool) {
-				printf("\n\n--- %03d ---\n\n", i + 1);
-				
-				printf("Nombre: %s\nApellido: %s\nEdad: %d\nCedula: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
-					(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->id, (ptr + i)->age, 
-					(ptr + i)->sex, (ptr + i)->nationality, (ptr + i)->civil_state
-				);
-				
-				printf("\nPie Plano: %d\nMilitar: %d\nEstado Activo: %d",
-					(ptr + i)->plane_feet, (ptr + i)->is_military,
-					(ptr + i)->is_active
-				);
-				
+				show(i, 1);
 				true = 0;
 			}
 		}
