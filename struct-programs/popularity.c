@@ -9,7 +9,6 @@ typedef struct Encuesta {
 	char name[50];
 	char lastname[50];
 	char birth_date[15];
-	//char sex[5];
 	int  popularity;
 } Encuestado;
 
