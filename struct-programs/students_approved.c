@@ -244,7 +244,7 @@ void get_information(Resultado *ptr, int n, int size[]) {
 		}
 		
 		if (true) {	
-			printf("\n\n- Objetivos (Aprovado = 1 | No Aprobado = 0) -\n\n");
+			printf("\n\n- Objetivos (Aprobado = 1 | No Aprobado = 0) -\n\n");
 			
 			printf("Minimo para aprobar son 3 Objetivos\nNumero de Objetivos = 5\n\n");
 								
