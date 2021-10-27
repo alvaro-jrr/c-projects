@@ -6,12 +6,15 @@
 
 float get_n(char *str);
 int   get_option(int min, int max, char *str);
+int   partition(float arr[], int start, int end);
 void  clear();
 void  display_stgs(int n, int m, char arr[n][m]);
 void  get_arr(float arr[], int size);
+void  swap(float arr[], int first_pos, int second_pos);
 void  bubble(float arr[], int size);
 void  insertion(float arr[], int size);
 void  selection(float arr[], int size);
+void  quicksort(float arr[], int start, int end);
 void  print_array(float arr[], int size);
 
 // ----- Main -----
@@ -35,7 +38,7 @@ int main() {
 	char options[][60] = {"Ordenamiento de Burbuja", 
 		"Ordenamiento por Insercion",
 		"Ordenamiento por Seleccion",
-		"Ordanimento Rapido (QuickSort)",
+		"Ordenamiento Rapido (QuickSort)",
 		"Busqueda Binaria",
 		"Finalizar"};
 	
@@ -51,47 +54,49 @@ int main() {
 		printf("\n---\n\n");
 		
 		if (opt != 6) {
+			// Obtener Matriz
 			size = get_option(1, max_size, "Numero de Elementos"); printf("\n");
 			get_arr(arr, size);
-		}
-		
-		switch(opt) {
-			// burbuja
-			case 1:
-				bubble(arr, size);
-				break;
-				
-			// insercion
-			case 2:
-				insertion(arr, size);
-				clear();
-				break;
-				
-			// seleccion
-			case 3:
-				selection(arr, size);
-				break;
-				
-			// qs
-			case 4:
-				clear();
-				break;
-				
-			// binaria
-			case 5:
-				clear();
-				break;
-				
-			case 6:
-			default:
-				true = 0;
-				break;
-		}
-		
-		if (opt != 6) {
+
+			// Ordenar segun Metodo Elegido
+			switch(opt) {
+				// burbuja
+				case 1:
+					bubble(arr, size);
+					break;
+					
+				// insercion
+				case 2:
+					insertion(arr, size);
+					break;
+					
+				// seleccion
+				case 3:
+					selection(arr, size);
+					break;
+					
+				// qs
+				case 4:
+					quicksort(arr, 0, size - 1);
+					break;
+					
+				// binaria
+				case 5:
+					clear();
+					break;
+
+				// default
+				default:
+					true = 0;
+					break;
+			}
+
+			// Imprimir Matriz
 			printf("\n- Matriz Ordenada - \n\n");
 			print_array(arr, size); printf("\n");
 			clear();
+		} else {
+			true = 0;
 		}
 		
 		// Limpiar Pantalla
@@ -184,21 +189,69 @@ int get_option(int min, int max, char *str) {
 	return (int) n;
 }
 
+// Funcion que realiza la particion de la matriz
+int partition(float arr[], int start, int end) {
+	
+	/*
+	 * Esta funcion toma al ultimo
+	 * elemento de la matriz como pivote.
+	 * Colocando el pivote en su posicion
+	 * correcta en la matriz, colocando
+	 * los elementos mas pequenios a
+	 * la izquierda y los mas grandes
+	 * a la derecha del pivote.
+	*/
+	
+    int i, j = start - 1;
+    float pivot = arr[end];
+    
+    /*
+     * La variable j indica el indice 
+     * del elemento mas pequenio y la
+     * correcta posicion del pivote.
+    */
+
+    for (i = start; i <= end - 1; i++) {
+		
+		// Si el numero actual es menor que el pivote
+        if (arr[i] < pivot) {
+            // Incremena el indice de numeros pequenios
+            j++;
+
+            // Intercambia las posiciones
+            swap(arr, j, i);
+        }
+    }
+	
+	// Coloca el pivote en la posicion correcta
+    swap(arr, j + 1, end);
+
+    return (j + 1);
+}
+
 // Obtener Elementos de una Matriz
 void get_arr(float arr[], int size) {
 	int i;
 	char str[10];
 	
 	for (i = 0; i < size; i++) {
-		sprintf(str, "[%d]", i);
+		sprintf(str, "[%d]", i + 1);
 		arr[i] = get_n(str);
 	}
+}
+
+// Funcion que intercambio posiciones de una matriz
+void swap(float arr[], int first_pos, int second_pos) {
+    float pivot;
+    
+    pivot = arr[second_pos];
+    arr[second_pos] = arr[first_pos];
+    arr[first_pos] = pivot;
 }
 
 // Ordenamiento por Burbuja
 void bubble(float arr[], int size) {
 	int i, j;
-	float pivot;
 	
 	// Iteracion que realiza las pasadas
 	for (i = 0; i < size; i++) {
@@ -213,9 +266,7 @@ void bubble(float arr[], int size) {
 			*/
 			
 			if (arr[j] > arr[j + 1]) {
-				pivot = arr[j + 1];
-				arr[j + 1] = arr[j];
-				arr[j] = pivot;
+				swap(arr, j + 1, j);
 			}
 		}
 	}
@@ -252,7 +303,6 @@ void insertion(float arr[], int size) {
 // Ordenamiento por Seleccion
 void selection(float arr[], int size) {
 	int i, j, largest_index = 0;
-	float pivot;
 	
 	// Pasadas
 	for (i = 0; i < (size + i); i++, size--) {
@@ -270,14 +320,36 @@ void selection(float arr[], int size) {
 		 * de la matriz iterada y el
 		 * mayor elemento encontrado.
 		*/
-		
-		pivot = arr[size - 1];
-		arr[size - 1] = arr[largest_index];
-		arr[largest_index] = pivot;
+
+		swap(arr, largest_index, size - 1);
 		
 		// Establece el largest_index a 0
 		largest_index = 0;
 	}
+}
+
+// Ordenamiento rapido (QuickSort)
+void quicksort(float arr[], int start, int end) {
+    int split;
+
+    // Si el indice inicial < final
+    if (start < end) {
+		
+		/*
+		 * Coloca a end (el pivote) en
+		 * su posicion correcta y
+		 * retorna el indice de 
+		 * particion de la matriz.
+		*/
+		
+        split = partition(arr, start, end);
+
+        // Ordena la parte izquierda de la matriz particionada
+        quicksort(arr, start, split - 1);
+
+        // Ordena la parte derecha de la matriz particionada
+        quicksort(arr, split + 1, end);
+    }
 }
 
 // Funcion que Muestra una Matriz
