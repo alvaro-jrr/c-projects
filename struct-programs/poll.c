@@ -23,9 +23,8 @@ void organize(
 	Encuestado *ptr, Encuestado *male_younger, Encuestado *female_younger,
 	Encuestado *male_older, Encuestado *female_older, int size_organized,
 	int size, int male_younger_size[0], int female_younger_size[0],
-	int male_older_size[0], int female_older_size[0];
+	int male_older_size[0], int female_older_size[0]
 );
-
 
 void display_stgs(int n, int m, char arr[n][m]);
 void get_information(Encuestado *ptr, int n, int size[]);
@@ -232,7 +231,7 @@ int main() {
 
 	printf("----- Finalizado -----");
 	
-	printf("\n\nCoded with \u2764 by Alvaro");
+	printf("\n\nCoded with <3 by Alvaro\n\n");
 	
 	return 0;
 }
@@ -410,28 +409,27 @@ void organize(
 				
 	for (i = size_organized; i < size; i++) {
 		if (strcmp((ptr + i)->sex, "M") == 0) {
-			
 			if ((ptr + i)->age < 25) {
+				// Mover masculino a male_younger
 				memmove((male_younger + male_younger_size[0]), (ptr + i), sizeof(Encuestado));
 				male_younger_size[0]++;
 			} else {
+				// Mover masculino a male_older 
 				memmove((male_older + male_older_size[0]), (ptr + i), sizeof(Encuestado));
 				male_older_size[0]++;
 			}
-			
 		} else {
-			
 			if ((ptr + i)->age < 25) {
+				// Mover femenina a female_younger
 				memmove((female_younger + female_younger_size[0]), (ptr + i), sizeof(Encuestado));
 				female_younger_size[0]++;
 			} else {
+				// Mover femenina a female_older
 				memmove((female_older + female_older_size[0]), (ptr + i), sizeof(Encuestado));
 				female_older_size[0]++;
 			}
-			
 		}
 	}
-	
 }
 
 // Funcion que muestra la informacion
