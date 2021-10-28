@@ -158,7 +158,7 @@ int main() {
 	
 	printf("----- Finalizado -----");
 	
-	printf("\n\nCoded with \u2764 by Alvaro");
+	printf("\n\nCoded with <3 by Alvaro\n\n");
 	
 	return 0;
 }
