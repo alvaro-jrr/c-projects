@@ -25,6 +25,7 @@ void  clear();
 void  display_stgs(int n, int m, char arr[n][m]);
 void  get_state(Ciudadano *ptr, int size, int age);
 void  get_information(Ciudadano *ptr, int n, int size[]);
+void  show(Ciudadano *ptr, int i, int sex);
 void  display(Ciudadano *ptr, int size, char *type, char *prompt);
 
 // ----- Main -----
@@ -88,7 +89,6 @@ int main() {
 					
 					n = (int) get_option(1, max_size - size[0], "Numero de Personas a Registrar");
 					get_information(ptr, n, size);
-					//size += n;
 					clear();
 					
 					break;
@@ -136,7 +136,7 @@ int main() {
 	
 	printf("----- Finalizado -----");
 	
-	printf("\n\nCoded with \u2764 by Alvaro");
+	printf("\n\nCoded with <3 by Alvaro\n\n");
 	
 	return 0;
 }
@@ -316,28 +316,28 @@ void get_information(Ciudadano *ptr, int n, int size[]) {
 	}
 }
 
+// Funcion que despliega la informacion de la posicion i
+void show(Ciudadano *ptr, int i, int sex) {
+	printf(
+		"Nombre: %s\nApellido: %s\nEdad: %d\nCedula: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
+		(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->age, (ptr + i)->id, 
+		(ptr + i)->sex, (ptr + i)->nationality, (ptr + i)->civil_state
+	);
+
+	// Si es masculino
+	if (sex) {
+		printf("\nPie Plano: %d\nMilitar: %d\nEstado Activo: %d",
+			(ptr + i)->plane_feet, (ptr + i)->is_military,
+			(ptr + i)->is_active
+		);
+	}
+}
+
 // Funcion que muestra la informacion
 void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 	int i, bool, true = 1;
 	
 	printf("----- %s -----", prompt);
-	
-	// Funcion que despliega la informacion de la posicion i
-	void show(int i, int is_male) {
-		printf("\n\n--- %03d ---\n\n", i + 1);
-		
-		printf("Nombre: %s\nApellido: %s\nEdad: %d\nCedula: %d\nSexo: %s\nNacionalidad: %s\nEstado Civil: %s",
-			(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->age, (ptr + i)->id, 
-			(ptr + i)->sex, (ptr + i)->nationality, (ptr + i)->civil_state
-		);
-		
-		if (is_male) {
-			printf("\nPie Plano: %d\nMilitar: %d\nEstado Activo: %d",
-				(ptr + i)->plane_feet, (ptr + i)->is_military,
-				(ptr + i)->is_active
-			);
-		}
-	}
 	
 	/*
 	 * Si type es igual a all,
@@ -345,7 +345,7 @@ void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 	 * registros.
 	 * 
 	 * Si type es igual a vote,
-	 * imprime todos los que
+	 * imprimte todos los que
 	 * son capaces de votar.
 	 * 
 	 * Si type es igual a militar,
@@ -356,13 +356,15 @@ void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 	
 	if (strcmp(type, "all") == 0) {
 		for (i = 0; i < size; i++) {
-			show(i, strcmp((ptr + i)->sex, "M") == 0);			
+			printf("\n\n--- %03d ---\n\n", i + 1);
+			show(ptr, i, strcmp((ptr + i)->sex, "M") == 0);
 			true = 0;
 		}
 	} else if (strcmp(type, "vote") == 0) {
 		for (i = 0; i < size; i++) {
 			if ((ptr + i)->age >= 18) {
-				show(i, strcmp((ptr + i)->sex, "M") == 0);
+				printf("\n\n--- %03d ---\n\n", i + 1);
+				show(ptr, i, strcmp((ptr + i)->sex, "M") == 0);
 				true = 0;				
 			}
 		}
@@ -378,7 +380,8 @@ void display(Ciudadano *ptr, int size, char *type, char *prompt) {
 				&& ((ptr + i)->is_active == 0);
 			
 			if (bool) {
-				show(i, 1);
+				printf("\n\n--- %03d ---\n\n", i + 1);
+				show(ptr, i, 1);
 				true = 0;
 			}
 		}
