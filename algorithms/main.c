@@ -10,11 +10,13 @@ int   partition(float arr[], int start, int end);
 void  clear();
 void  display_stgs(int n, int m, char arr[n][m]);
 void  get_arr(float arr[], int size);
+int   binary_search(float arr[], int size, float key);
 void  swap(float arr[], int first_pos, int second_pos);
 void  bubble(float arr[], int size);
 void  insertion(float arr[], int size);
 void  selection(float arr[], int size);
 void  quicksort(float arr[], int start, int end);
+void  binary_insertion(float arr[], int size);
 void  print_array(float arr[], int size);
 
 // ----- Main -----
@@ -39,11 +41,11 @@ int main() {
 		"Ordenamiento por Insercion",
 		"Ordenamiento por Seleccion",
 		"Ordenamiento Rapido (QuickSort)",
-		"Busqueda Binaria",
+		"Ordenamiento por Insercion Binaria",
 		"Finalizar"};
 	
 	do {
-		printf("----- Programa de Ordenamiento y Busqueda -----\n\n");
+		printf("----- Programa de Ordenamiento -----\n\n");
 		
 		// Mostrar Opciones
 		display_stgs(n_opt, 60, options); printf("\n");
@@ -82,7 +84,7 @@ int main() {
 					
 				// binaria
 				case 5:
-					clear();
+					binary_insertion(arr, size);
 					break;
 
 				// default
@@ -108,7 +110,7 @@ int main() {
 	
 	printf("----- Finalizado -----");
 	
-	printf("\n\nCoded with \u2764 by Alvaro");
+	printf("\n\nCoded with <3 by Alvaro\n\n");
 
 	return 0;
 }
@@ -189,6 +191,26 @@ int get_option(int min, int max, char *str) {
 	return (int) n;
 }
 
+// Obtener Elementos de una Matriz
+void get_arr(float arr[], int size) {
+	int i;
+	char str[10];
+	
+	for (i = 0; i < size; i++) {
+		sprintf(str, "[%d]", i + 1);
+		arr[i] = get_n(str);
+	}
+}
+
+// Funcion que intercambio posiciones de una matriz
+void swap(float arr[], int first_pos, int second_pos) {
+    float pivot;
+    
+    pivot = arr[second_pos];
+    arr[second_pos] = arr[first_pos];
+    arr[first_pos] = pivot;
+}
+
 // Funcion que realiza la particion de la matriz
 int partition(float arr[], int start, int end) {
 	
@@ -227,26 +249,6 @@ int partition(float arr[], int start, int end) {
     swap(arr, j + 1, end);
 
     return (j + 1);
-}
-
-// Obtener Elementos de una Matriz
-void get_arr(float arr[], int size) {
-	int i;
-	char str[10];
-	
-	for (i = 0; i < size; i++) {
-		sprintf(str, "[%d]", i + 1);
-		arr[i] = get_n(str);
-	}
-}
-
-// Funcion que intercambio posiciones de una matriz
-void swap(float arr[], int first_pos, int second_pos) {
-    float pivot;
-    
-    pivot = arr[second_pos];
-    arr[second_pos] = arr[first_pos];
-    arr[first_pos] = pivot;
 }
 
 // Ordenamiento por Burbuja
@@ -352,24 +354,86 @@ void quicksort(float arr[], int start, int end) {
     }
 }
 
+// Busqueda Binaria
+int binary_search(float arr[], int size, float key) {
+    int low = 0, high = size, mid;
+
+	// Mientras low < high
+    while (low < high) {
+		// Obtencion del indice medio
+        mid = (low + high) / 2;
+
+		/*
+		 *
+		 * Si el elemento medio es menor o
+		 * igual a "key". Entonces low
+		 * toma el valor de "mid" + 1.
+		 * 
+		 * Sino, high toma el valor de "mid"
+		*/
+	
+        if (arr[mid] <= key) {
+            low = mid + 1;
+        } else {
+            high = mid;
+        }
+    }
+
+	// Retorno del indice donde se debe insertar
+    return low;
+}
+
+// Insercion Binaria
+void binary_insertion(float arr[], int size) {
+    int i, j, index;
+    float key;
+
+	/*
+	 * Se asume que el primer elemento
+	 * esta ordenado. Por lo tanto,
+	 * se inicia el ordenamiento desde
+	 * el segundo elemento hasta
+	 * el ultimo
+	*/
+
+    for (i = 1; i < size; i++) {
+		// Elemento a Introducir
+        key = arr[i];
+
+		// Obtencion del indice donde se debe introducir "key"
+        index = binary_search(arr, i, key);
+
+        j = i;
+
+        // Moviendo cada elemento desde index hasta i (hacia la derecha)
+        while (j > index) {
+            arr[j] = arr[j - 1];
+            j--;
+        }
+
+        // Insertando "key" en su correcta posicion
+        arr[index] = key;
+    }
+}
+
 // Funcion que Muestra una Matriz
 void print_array(float arr[], int size) {
 	// Impresion de cada elemento de la matriz
 	if (size == 1) {
-		printf("{%f}", arr[0]);
+		printf("{%.2f}", arr[0]);
 	} else {
 		for (int i = 0; i < size; i++) {
 			if (size == 1) {
-				printf("{%f}, ", arr[i]);
+				printf("{%.2f}, ", arr[i]);
 			} else {
 				if (i == 0) {
-					printf("{%f, ", arr[i]);
+					printf("{%.2f, ", arr[i]);
 				} else if (i + 1 == size) {
-					printf("%f}", arr[i]);
+					printf("%.2f}", arr[i]);
 				} else {
-					printf("%f, ", arr[i]);
+					printf("%.2f, ", arr[i]);
 				}			
 			}
-		}		
+		}
 	}
 }
