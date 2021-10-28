@@ -20,6 +20,7 @@ int   get_option(int min, int max, char *str);
 void  clear();
 void  display_stgs(int n, int m, char arr[n][m]);
 void  get_information(Resultado *ptr, int n, int size[]);
+void  show(Resultado *ptr, int i);
 void  display(Resultado *ptr, int size, char *type, char *prompt);
 
 // ----- Main -----
@@ -118,7 +119,7 @@ int main() {
 	
 	printf("----- Finalizado -----");
 	
-	printf("\n\nCoded with \u2764 by Alvaro");
+	printf("\n\nCoded with <3 by Alvaro\n\n");
 		
 	return 0;
 }
@@ -280,29 +281,29 @@ void get_information(Resultado *ptr, int n, int size[]) {
 	}
 }
 
+// Funcion que despliega la informacion de la posicion i
+void show(Resultado *ptr, int i) {
+	int j;
+		
+	printf("\n\n--- %03d ---\n\n", i + 1);
+		
+	printf("Nombre: %s\nApellido: %s\nCarrera: %s\nCedula: %d\nAprobado: %d",
+		(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->career, 
+		(ptr + i)->id, (ptr + i)->approved
+	);
+	
+	printf("\n\n- Objetivos -\n\n");
+		
+	for (j = 0; j < 5; j++) {
+		printf("%d) %s\n", j + 1, (ptr + i)->objectives[j]);
+	}
+}
+
 // Funcion que muestra la informacion
 void display(Resultado *ptr, int size, char *type, char *prompt) {
 	int i, true = 1;
 	
 	printf("----- %s -----", prompt);
-	
-	// Funcion que despliega la informacion de la posicion i
-	void show(int i) {
-		int j;
-		
-		printf("\n\n--- %03d ---\n\n", i + 1);
-		
-		printf("Nombre: %s\nApellido: %s\nCarrera: %s\nCedula: %d\nAprobado: %d",
-			(ptr + i)->name, (ptr + i)->lastname, (ptr + i)->career, 
-			(ptr + i)->id, (ptr + i)->approved
-		);
-		
-		printf("\n\n- Objetivos -\n\n");
-			
-		for (j = 0; j < 5; j++) {
-			printf("%d) %s\n", j + 1, (ptr + i)->objectives[j]);
-		}
-	}
 	
 	/*
 	 * Si type es igual a all,
@@ -316,13 +317,13 @@ void display(Resultado *ptr, int size, char *type, char *prompt) {
 	
 	if (strcmp(type, "all") == 0) {
 		for (i = 0; i < size; i++) {
-			show(i);
+			show(ptr, i);
 			true = 0;
 		}
 	} else if (strcmp(type, "approved") == 0) {
 		for (i = 0; i < size; i++) {
 			if ((ptr + i)->approved) {
-				show(i);
+				show(ptr, i);
 				true = 0;
 			}
 		}
